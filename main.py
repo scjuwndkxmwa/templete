@@ -5,7 +5,12 @@ import signal
 import sys
 
 TIKTOK_URL = "https://www.tiktok.com/@d.shakertawfiqalaroury/live"
-FACEBOOK_RTMP = "rtmps://live-api-s.facebook.com:443/rtmp/FB-122144887155180204-0-Ab5tCsVZVVkjdpNVC8cwl3Oa"
+
+# استبدل هذا بالمفتاح الجديد والدائم من فيسبوك
+FACEBOOK_STREAM_KEY = "FB-122144887155180204-0-Ab5tCsVZVVkjdpNVC8cwl3Oa"
+
+# استخدام rtmps على البورت 443 أو rtmp على البورت 80
+FACEBOOK_RTMP = f"rtmps://live-api-s.facebook.com:443/rtmp/{FACEBOOK_STREAM_KEY}"
 
 CHECK_INTERVAL_OFFLINE = 30
 

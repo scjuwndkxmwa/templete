@@ -4,25 +4,27 @@ import time
 import signal
 import sys
 
-TIKTOK_URL = "https://www.tiktok.com/@USERNAME/live"
+TIKTOK_USERNAME = os.getenv("TIKTOK_USERNAME", "d.shakertawfiqalaroury")
+TIKTOK_URL = f"https://www.tiktok.com/@{TIKTOK_USERNAME}/live"
 
-YOUTUBE_RTMP = "rtmp://a.rtmp.youtube.com/live2/STREAM KEY"
+YOUTUBE_STREAM_KEY = os.getenv("YOUTUBE_STREAM_KEY", "4vm5-3h9h-1t7u-a7aa-0e57")
+YOUTUBE_RTMP = f"rtmp://a.rtmp.youtube.com/live2/{YOUTUBE_STREAM_KEY}"
 
+CHECK_INTERVAL_OFFLINE = 30  
 
 STREAMLINK_CMD = [
     "streamlink",
     "--hls-live-edge", "2",
     "--ringbuffer-size", "512M",
-    "--retry-streams", "10",
-    "--retry-max", "0",
-    "--stream-segment-attempts", "10",
-    "--stream-segment-timeout", "30",
-    "--stream-timeout", "60",
+    "--retry-streams", "2",
+    "--retry-max", "2",
+    "--stream-segment-attempts", "5",
+    "--stream-segment-timeout", "15",
+    "--stream-timeout", "30",
     "--stdout",
     TIKTOK_URL,
     "best"
 ]
-
 
 FFMPEG_CMD = [
     "ffmpeg",
@@ -56,7 +58,6 @@ FFMPEG_CMD = [
     YOUTUBE_RTMP
 ]
 
-
 streamlink_process = None
 ffmpeg_process = None
 
@@ -76,18 +77,14 @@ def stop_process(process):
 
 def cleanup():
     global streamlink_process, ffmpeg_process
-
-    print("\nStopping processes...")
-
     stop_process(ffmpeg_process)
     stop_process(streamlink_process)
-
     streamlink_process = None
     ffmpeg_process = None
 
 
 def signal_handler(sig, frame):
-    print("\nStopped by user.")
+    print("\n[SYSTEM] Stopped by Railway / User.")
     cleanup()
     sys.exit(0)
 
@@ -96,24 +93,33 @@ signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
 
+print("========================================")
+print("TikTok Live Monitor & Auto-Restreamer")
+print(f"Target TikTok: @{TIKTOK_USERNAME}")
+print("Status: RUNNING & LISTENING...")
+print("========================================\n")
+
 while True:
     try:
-        print("\n========================================")
-        print("Starting TikTok -> YouTube stream...")
-        print("Quality: BEST")
-        print("Video: COPY (NO RE-ENCODE)")
-        print("Timestamp correction: ON")
-        print("Crop: OFF")
-        print("Resize: OFF")
-        print("========================================\n")
-
+        cleanup()
+        
         streamlink_process = subprocess.Popen(
             STREAMLINK_CMD,
             stdout=subprocess.PIPE,
-            stderr=None,
+            stderr=subprocess.PIPE,
             bufsize=0
         )
 
+        time.sleep(3)
+        
+        if streamlink_process.poll() is not None:
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream is OFFLINE. Re-checking in {CHECK_INTERVAL_OFFLINE} seconds...")
+            cleanup()
+            time.sleep(CHECK_INTERVAL_OFFLINE)
+            continue
+
+        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ONLINE! Starting Restream to YouTube...")
+        
         ffmpeg_process = subprocess.Popen(
             FFMPEG_CMD,
             stdin=streamlink_process.stdout,
@@ -125,37 +131,19 @@ while True:
         streamlink_process.stdout.close()
 
         ffmpeg_return = ffmpeg_process.wait()
-
-        if streamlink_process and streamlink_process.poll() is None:
-            stop_process(streamlink_process)
-
-        streamlink_return = (
-            streamlink_process.poll()
-            if streamlink_process
-            else "N/A"
-        )
-
-        print("\n========================================")
-        print("Stream stopped.")
-        print(f"FFmpeg exit code: {ffmpeg_return}")
-        print(f"Streamlink exit code: {streamlink_return}")
-        print("Restarting in 1 second...")
-        print("========================================\n")
+        
+        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ended (FFmpeg exit code: {ffmpeg_return}).")
 
     except KeyboardInterrupt:
+        print("\nStopping...")
         cleanup()
         break
 
-    except BrokenPipeError:
-        print("\nBroken pipe detected.")
-
-    except OSError as e:
-        print(f"\nOS error: {e}")
-
     except Exception as e:
-        print(f"\nError: {e}")
+        print(f"\n[ERROR] Unexpected error: {e}")
 
     finally:
         cleanup()
 
-    time.sleep(1)
+    print(f"Waiting {CHECK_INTERVAL_OFFLINE} seconds before checking for the next stream...\n")
+    time.sleep(CHECK_INTERVAL_OFFLINE)

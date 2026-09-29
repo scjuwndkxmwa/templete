@@ -7,8 +7,8 @@ import sys
 TIKTOK_USERNAME = os.getenv("TIKTOK_USERNAME", "d.shakertawfiqalaroury")
 TIKTOK_URL = f"https://www.tiktok.com/@{TIKTOK_USERNAME}/live"
 
-YOUTUBE_STREAM_KEY = os.getenv("YOUTUBE_STREAM_KEY", "4vm5-3h9h-1t7u-a7aa-0e57")
-YOUTUBE_RTMP = f"rtmp://a.rtmp.youtube.com/live2/{YOUTUBE_STREAM_KEY}"
+FACEBOOK_STREAM_KEY = os.getenv("FACEBOOK_STREAM_KEY", "YOUR_FACEBOOK_STREAM_KEY")
+FACEBOOK_RTMP = f"rtmps://live-api-s.facebook.com:443/rtmp/{FACEBOOK_STREAM_KEY}"
 
 CHECK_INTERVAL_OFFLINE = 30  
 
@@ -55,7 +55,7 @@ FFMPEG_CMD = [
     "-flvflags", "no_duration_filesize",
 
     "-f", "flv",
-    YOUTUBE_RTMP
+    FACEBOOK_RTMP
 ]
 
 streamlink_process = None
@@ -118,7 +118,7 @@ while True:
             time.sleep(CHECK_INTERVAL_OFFLINE)
             continue
 
-        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ONLINE! Starting Restream to YouTube...")
+        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ONLINE! Starting Restream to Facebook...")
         
         ffmpeg_process = subprocess.Popen(
             FFMPEG_CMD,

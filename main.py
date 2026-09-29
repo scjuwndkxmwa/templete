@@ -4,13 +4,13 @@ import time
 import signal
 import sys
 
-TIKTOK_USERNAME = os.getenv("TIKTOK_USERNAME", "d.shakertawfiqalaroury")
+TIKTOK_USERNAME = "d.shakertawfiqalaroury"
 TIKTOK_URL = f"https://www.tiktok.com/@{TIKTOK_USERNAME}/live"
 
-FACEBOOK_STREAM_KEY = os.getenv("FACEBOOK_STREAM_KEY", "YOUR_FACEBOOK_STREAM_KEY")
+FACEBOOK_STREAM_KEY = "YOUR_FACEBOOK_STREAM_KEY"
 FACEBOOK_RTMP = f"rtmps://live-api-s.facebook.com:443/rtmp/{FACEBOOK_STREAM_KEY}"
 
-CHECK_INTERVAL_OFFLINE = 30  
+CHECK_INTERVAL_OFFLINE = 30
 
 STREAMLINK_CMD = [
     "streamlink",
@@ -94,8 +94,9 @@ signal.signal(signal.SIGTERM, signal_handler)
 
 
 print("========================================")
-print("TikTok Live Monitor & Auto-Restreamer")
+print("TikTok Live Monitor -> Facebook Restreamer")
 print(f"Target TikTok: @{TIKTOK_USERNAME}")
+print("Destination: Facebook Live")
 print("Status: RUNNING & LISTENING...")
 print("========================================\n")
 

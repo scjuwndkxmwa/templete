@@ -4,11 +4,8 @@ import time
 import signal
 import sys
 
-TIKTOK_USERNAME = "d.shakertawfiqalaroury"
-TIKTOK_URL = f"https://www.tiktok.com/@{TIKTOK_USERNAME}/live"
-
-FACEBOOK_STREAM_KEY = "YOUR_FACEBOOK_STREAM_KEY"
-FACEBOOK_RTMP = f"rtmps://live-api-s.facebook.com:443/rtmp/{FACEBOOK_STREAM_KEY}"
+TIKTOK_URL = "https://www.tiktok.com/@d.shakertawfiqalaroury/live"
+FACEBOOK_RTMP = "rtmps://live-api-s.facebook.com:443/rtmp/FB-122144887155180204-0-Ab5tCsVZVVkjdpNVC8cwl3Oa"
 
 CHECK_INTERVAL_OFFLINE = 30
 
@@ -95,7 +92,7 @@ signal.signal(signal.SIGTERM, signal_handler)
 
 print("========================================")
 print("TikTok Live Monitor -> Facebook Restreamer")
-print(f"Target TikTok: @{TIKTOK_USERNAME}")
+print(f"Target TikTok: {TIKTOK_URL}")
 print("Destination: Facebook Live")
 print("Status: RUNNING & LISTENING...")
 print("========================================\n")

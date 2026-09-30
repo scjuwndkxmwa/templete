@@ -4,13 +4,13 @@ import time
 import signal
 import sys
 
-TIKTOK_URL = "https://www.tiktok.com/@amr_noureldeen/live"
+TIKTOK_URL = os.getenv("TIKTOK_URL", "https://www.tiktok.com/@amr_noureldeen/live")
 
-INSTAGRAM_RTMP = "rtmps://edgetee-upload-hbe1-2.xx.fbcdn.net:443/rtmp/18019166741730602?s_bl=1&s_fbp=mrs2-3&s_ow=10&s_prp=hbe1-2&s_sw=0&s_tids=1&s_vt=ig&a=Ab4PGN2juJX4I2Qwk4y-0J8J"
-FACEBOOK_RTMP = "rtmps://live-api-s.facebook.com:443/rtmp/FB-122144887155180204-0-Ab5tCsVZVVkjdpNVC8cwl3Oa"
-YOUTUBE_RTMP = "rtmp://a.rtmp.youtube.com/live2/r77y-h37m-x6xr-x0dj-0g6q"
+INSTAGRAM_RTMP = os.getenv("INSTAGRAM_RTMP", "rtmps://edgetee-upload-hbe1-2.xx.fbcdn.net:443/rtmp/18019166741730602?s_bl=1&s_fbp=mrs2-3&s_ow=10&s_prp=hbe1-2&s_sw=0&s_tids=1&s_vt=ig&a=Ab4PGN2juJX4I2Qwk4y-0J8J")
+FACEBOOK_RTMP = os.getenv("FACEBOOK_RTMP", "rtmps://live-api-s.facebook.com:443/rtmp/FB-122144887155180204-0-Ab5tCsVZVVkjdpNVC8cwl3Oa")
+YOUTUBE_RTMP = os.getenv("YOUTUBE_RTMP", "rtmp://a.rtmp.youtube.com/live2/r77y-h37m-x6xr-x0dj-0g6q")
 
-TEE_OUTPUT = f"[f=flv]{INSTAGRAM_RTMP}|[f=flv]{FACEBOOK_RTMP}|[f=flv]{YOUTUBE_RTMP}"
+TEE_OUTPUT = f"[f=flv:onfail=ignore]{INSTAGRAM_RTMP}|[f=flv:onfail=ignore]{FACEBOOK_RTMP}|[f=flv:onfail=ignore]{YOUTUBE_RTMP}"
 
 CHECK_INTERVAL_OFFLINE = 30
 
@@ -34,11 +34,15 @@ FFMPEG_CMD = [
     "-loglevel", "warning",
     "-stats",
 
+    "-reconnect", "1",
+    "-reconnect_streamed", "1",
+    "-reconnect_delay_max", "5",
+
     "-dts_delta_threshold", "1",
     "-fflags", "+genpts+discardcorrupt",
     "-err_detect", "ignore_err",
 
-    "-thread_queue_size", "1024",
+    "-thread_queue_size", "2048",
     "-i", "-",
 
     "-map", "0:v:0",
@@ -98,7 +102,7 @@ signal.signal(signal.SIGTERM, signal_handler)
 print("========================================")
 print("TikTok Live Monitor -> Multi-Restreamer")
 print(f"Target TikTok: {TIKTOK_URL}")
-print("Destinations: Instagram Live, Facebook Live, YouTube Live")
+print("Destinations: Instagram, Facebook, YouTube")
 print("Status: RUNNING & LISTENING...")
 print("========================================\n")
 
@@ -121,7 +125,7 @@ while True:
             time.sleep(CHECK_INTERVAL_OFFLINE)
             continue
 
-        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ONLINE! Starting Restream to Instagram, Facebook & YouTube...")
+        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ONLINE! Starting Restream to all platforms...")
         
         ffmpeg_process = subprocess.Popen(
             FFMPEG_CMD,

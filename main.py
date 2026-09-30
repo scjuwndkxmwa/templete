@@ -6,7 +6,7 @@ import sys
 
 TIKTOK_URL = os.getenv("TIKTOK_URL", "https://www.tiktok.com/@mo3az3lian/live")
 
-INSTAGRAM_RTMP = os.getenv("INSTAGRAM_RTMP", "rtmps://edgetee-upload-hbe1-2.xx.fbcdn.net:443/rtmp/18019166741730602?s_bl=1&s_fbp=mrs2-3&s_ow=10&s_prp=hbe1-2&s_sw=0&s_tids=1&s_vt=ig&a=Ab4PGN2juJX4I2Qwk4y-0J8J")
+INSTAGRAM_RTMP = os.getenv("INSTAGRAM_RTMP", "rtmps://edgetee-upload-hbe1-2.xx.fbcdn.net:443/rtmp/1785306922491991?s_bl=1&s_fbp=mrs2-3&s_igps=1&s_ow=10&s_prp=hbe1-2&s_ps=1&s_sw=0&s_tids=1&s_vt=ig&a=Ab7jOIiFElYAhN11j76v42Sw")
 FACEBOOK_RTMP = os.getenv("FACEBOOK_RTMP", "rtmps://live-api-s.facebook.com:443/rtmp/FB-122144887155180204-0-Ab5tCsVZVVkjdpNVC8cwl3Oa")
 YOUTUBE_RTMP = os.getenv("YOUTUBE_RTMP", "rtmp://a.rtmp.youtube.com/live2/r77y-h37m-x6xr-x0dj-0g6q")
 

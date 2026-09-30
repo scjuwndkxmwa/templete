@@ -4,13 +4,13 @@ import time
 import signal
 import sys
 
-TIKTOK_URL = "https://www.tiktok.com/@d.shakertawfiqalaroury/live"
+TIKTOK_URL = "https://www.tiktok.com/@amr_noureldeen/live"
 
-# استبدل هذا بالمفتاح الجديد والدائم من فيسبوك
-FACEBOOK_STREAM_KEY = "FB-122144887155180204-0-Ab5tCsVZVVkjdpNVC8cwl3Oa"
+INSTAGRAM_RTMP = "rtmps://edgetee-upload-hbe1-2.xx.fbcdn.net:443/rtmp/18019166741730602?s_bl=1&s_fbp=mrs2-3&s_ow=10&s_prp=hbe1-2&s_sw=0&s_tids=1&s_vt=ig&a=Ab4PGN2juJX4I2Qwk4y-0J8J"
+FACEBOOK_RTMP = "rtmps://live-api-s.facebook.com:443/rtmp/FB-122144887155180204-0-Ab5tCsVZVVkjdpNVC8cwl3Oa"
+YOUTUBE_RTMP = "rtmp://a.rtmp.youtube.com/live2/r77y-h37m-x6xr-x0dj-0g6q"
 
-# استخدام rtmps على البورت 443 أو rtmp على البورت 80
-FACEBOOK_RTMP = f"rtmps://live-api-s.facebook.com:443/rtmp/{FACEBOOK_STREAM_KEY}"
+TEE_OUTPUT = f"[f=flv]{INSTAGRAM_RTMP}|[f=flv]{FACEBOOK_RTMP}|[f=flv]{YOUTUBE_RTMP}"
 
 CHECK_INTERVAL_OFFLINE = 30
 
@@ -56,8 +56,8 @@ FFMPEG_CMD = [
 
     "-flvflags", "no_duration_filesize",
 
-    "-f", "flv",
-    FACEBOOK_RTMP
+    "-f", "tee",
+    TEE_OUTPUT
 ]
 
 streamlink_process = None
@@ -96,9 +96,9 @@ signal.signal(signal.SIGTERM, signal_handler)
 
 
 print("========================================")
-print("TikTok Live Monitor -> Facebook Restreamer")
+print("TikTok Live Monitor -> Multi-Restreamer")
 print(f"Target TikTok: {TIKTOK_URL}")
-print("Destination: Facebook Live")
+print("Destinations: Instagram Live, Facebook Live, YouTube Live")
 print("Status: RUNNING & LISTENING...")
 print("========================================\n")
 
@@ -121,7 +121,7 @@ while True:
             time.sleep(CHECK_INTERVAL_OFFLINE)
             continue
 
-        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ONLINE! Starting Restream to Facebook...")
+        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ONLINE! Starting Restream to Instagram, Facebook & YouTube...")
         
         ffmpeg_process = subprocess.Popen(
             FFMPEG_CMD,

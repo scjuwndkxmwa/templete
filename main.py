@@ -34,10 +34,6 @@ FFMPEG_CMD = [
     "-loglevel", "warning",
     "-stats",
 
-    "-reconnect", "1",
-    "-reconnect_streamed", "1",
-    "-reconnect_delay_max", "5",
-
     "-dts_delta_threshold", "1",
     "-fflags", "+genpts+discardcorrupt",
     "-err_detect", "ignore_err",

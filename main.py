@@ -4,7 +4,7 @@ import time
 import signal
 import sys
 
-TIKTOK_URL = os.getenv("TIKTOK_URL", "https://www.tiktok.com/@mo3az3lian/live")
+TIKTOK_URL = os.getenv("TIKTOK_URL", "https://www.tiktok.com/@yousry.yakout/live")
 
 INSTAGRAM_RTMP = os.getenv("INSTAGRAM_RTMP", "rtmps://edgetee-upload-hbe1-2.xx.fbcdn.net:443/rtmp/1771136117370887?s_bl=1&s_fbp=mrs2-3&s_igps=1&s_ow=10&s_prp=hbe1-2&s_ps=1&s_sw=0&s_tids=1&s_vt=ig&a=Ab5ZghO_wfHLuA2rZAjwsQNt")
 FACEBOOK_RTMP = os.getenv("FACEBOOK_RTMP", "rtmps://live-api-s.facebook.com:443/rtmp/FB-122144887155180204-0-Ab5tCsVZVVkjdpNVC8cwl3Oa")

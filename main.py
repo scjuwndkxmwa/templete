@@ -4,11 +4,14 @@ import time
 import signal
 import sys
 
-TIKTOK_URL = os.getenv("TIKTOK_URL", "https://www.tiktok.com/@d.shakertawfiqalaroury/live")
-YOUTUBE_RTMP = os.getenv("YOUTUBE_RTMP", "rtmp://a.rtmp.youtube.com/live2/4vm5-3h9h-1t7u-a7aa-0e57")
-FACEBOOK_RTMP = os.getenv("FACEBOOK_RTMP", "rtmps://live-api-s.facebook.com:443/rtmp/FB-122144887155180204-0-Ab5tCsVZVVkjdpNVC8cwl3Oa")
+TIKTOK_URL = os.getenv("TIKTOK_URL", "https://www.tiktok.com/@amr_noureldeen/live")
 
-CHECK_INTERVAL_OFFLINE = int(os.getenv("CHECK_INTERVAL_OFFLINE", "30"))
+FACEBOOK_RTMP = os.getenv("FACEBOOK_RTMP", "rtmps://live-api-s.facebook.com:443/rtmp/FB-122144887155180204-0-Ab5tCsVZVVkjdpNVC8cwl3Oa")
+YOUTUBE_RTMP = os.getenv("YOUTUBE_RTMP", "rtmp://a.rtmp.youtube.com/live2/4vm5-3h9h-1t7u-a7aa-0e57")
+
+TEE_OUTPUT = f"[f=flv:onfail=ignore]{FACEBOOK_RTMP}|[f=flv:onfail=ignore]{YOUTUBE_RTMP}"
+
+CHECK_INTERVAL_OFFLINE = 30
 
 STREAMLINK_CMD = [
     "streamlink",
@@ -24,8 +27,41 @@ STREAMLINK_CMD = [
     "best"
 ]
 
+FFMPEG_CMD = [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel", "warning",
+    "-stats",
+
+    "-dts_delta_threshold", "1",
+    "-fflags", "+genpts+discardcorrupt",
+    "-err_detect", "ignore_err",
+
+    "-thread_queue_size", "2048",
+    "-i", "-",
+
+    "-map", "0:v:0",
+    "-c:v", "copy",
+
+    "-map", "0:a:0?",
+    "-c:a", "aac",
+    "-b:a", "128k",
+    "-ar", "44100",
+    "-ac", "2",
+    "-af", "aresample=async=1000:min_hard_comp=0.100000:first_pts=0",
+
+    "-fps_mode", "passthrough",
+    "-flush_packets", "1",
+
+    "-flvflags", "no_duration_filesize",
+
+    "-f", "tee",
+    TEE_OUTPUT
+]
+
 streamlink_process = None
 ffmpeg_process = None
+
 
 def stop_process(process):
     if process and process.poll() is None:
@@ -39,6 +75,7 @@ def stop_process(process):
             except Exception:
                 pass
 
+
 def cleanup():
     global streamlink_process, ffmpeg_process
     stop_process(ffmpeg_process)
@@ -46,12 +83,23 @@ def cleanup():
     streamlink_process = None
     ffmpeg_process = None
 
+
 def signal_handler(sig, frame):
+    print("\n[SYSTEM] Stopped by Railway / User.")
     cleanup()
     sys.exit(0)
 
+
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
+
+
+print("========================================")
+print("TikTok Live Monitor -> Multi-Restreamer")
+print(f"Target TikTok: {TIKTOK_URL}")
+print("Destinations: Facebook, YouTube")
+print("Status: RUNNING & LISTENING...")
+print("========================================\n")
 
 while True:
     try:
@@ -67,30 +115,13 @@ while True:
         time.sleep(3)
         
         if streamlink_process.poll() is not None:
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream is OFFLINE. Re-checking in {CHECK_INTERVAL_OFFLINE} seconds...")
             cleanup()
             time.sleep(CHECK_INTERVAL_OFFLINE)
             continue
 
-        FFMPEG_CMD = [
-            "ffmpeg",
-            "-hide_banner",
-            "-loglevel", "warning",
-            "-stats",
-            "-dts_delta_threshold", "1",
-            "-fflags", "+genpts+discardcorrupt",
-            "-err_detect", "ignore_err",
-            "-thread_queue_size", "1024",
-            "-i", "-",
-            "-map", "0:v:0", "-c:v", "copy",
-            "-map", "0:a:0?", "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-ac", "2",
-            "-af", "aresample=async=1000:min_hard_comp=0.100000:first_pts=0",
-            "-fps_mode", "passthrough",
-            "-flush_packets", "1",
-            "-flvflags", "no_duration_filesize",
-            "-f", "flv", YOUTUBE_RTMP,
-            "-f", "flv", FACEBOOK_RTMP
-        ]
-
+        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ONLINE! Starting Restream to all platforms...")
+        
         ffmpeg_process = subprocess.Popen(
             FFMPEG_CMD,
             stdin=streamlink_process.stdout,
@@ -100,14 +131,21 @@ while True:
         )
 
         streamlink_process.stdout.close()
-        ffmpeg_process.wait()
+
+        ffmpeg_return = ffmpeg_process.wait()
+        
+        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ended (FFmpeg exit code: {ffmpeg_return}).")
 
     except KeyboardInterrupt:
+        print("\nStopping...")
         cleanup()
         break
-    except Exception:
-        pass
+
+    except Exception as e:
+        print(f"\n[ERROR] Unexpected error: {e}")
+
     finally:
         cleanup()
 
+    print(f"Waiting {CHECK_INTERVAL_OFFLINE} seconds before checking for the next stream...\n")
     time.sleep(CHECK_INTERVAL_OFFLINE)

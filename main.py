@@ -6,7 +6,7 @@ import sys
 
 TIKTOK_URL = os.getenv("TIKTOK_URL", "https://www.tiktok.com/@amr_noureldeen/live")
 
-FACEBOOK_RTMP = os.getenv("FACEBOOK_RTMP", "rtmps://live-api-s.facebook.com:443/rtmp/FB-122144887155180204-0-Ab5tCsVZVVkjdpNVC8cwl3Oa")
+FACEBOOK_RTMP = os.getenv("FACEBOOK_RTMP", "rtmps://live-api-s.facebook.com:443/rtmp/FB-122145065265180204-0-Ab6FqbEw50G14AO3ATPTeo9h")
 YOUTUBE_RTMP = os.getenv("YOUTUBE_RTMP", "rtmp://a.rtmp.youtube.com/live2/4vm5-3h9h-1t7u-a7aa-0e57")
 
 TEE_OUTPUT = f"[f=flv:onfail=ignore]{FACEBOOK_RTMP}|[f=flv:onfail=ignore]{YOUTUBE_RTMP}"

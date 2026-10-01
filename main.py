@@ -4,8 +4,8 @@ import time
 import signal
 import sys
 
-TIKTOK_URL = "https://www.tiktok.com/@d.shakertawfiqalaroury/live"
-RESTREAM_RTMP = "rtmp://live.restream.io/live/re_12443993_event29ed54641d4c4d168f572915389cd1ee"
+TIKTOK_URL = "https://www.tiktok.com/@m.dawoud2/live"
+RESTREAM_RTMP = "rtmp://live.restream.io/live/re_12443993_event529fde2248cc4d5780594d1ec6da4f46"
 
 CHECK_INTERVAL_OFFLINE = 30  
 

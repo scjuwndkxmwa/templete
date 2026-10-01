@@ -4,11 +4,10 @@ import time
 import signal
 import sys
 
-TIKTOK_URL = os.getenv("TIKTOK_URL", "https://www.tiktok.com/@d.shakertawfiqalaroury/live")
+TIKTOK_URL = "https://www.tiktok.com/@abdullahal3085/live"
+RESTREAM_RTMP = "rtmp://live.restream.io/live/re_12443993_eventeb3373bac8d74fd596d265741d8f0d48"
 
-FACEBOOK_RTMP = os.getenv("FACEBOOK_RTMP", "rtmps://live-api-s.facebook.com:443/rtmp/FB-122145065265180204-0-Ab6FqbEw50G14AO3ATPTeo9h")
-
-CHECK_INTERVAL_OFFLINE = 30
+CHECK_INTERVAL_OFFLINE = 30  
 
 STREAMLINK_CMD = [
     "streamlink",
@@ -34,7 +33,7 @@ FFMPEG_CMD = [
     "-fflags", "+genpts+discardcorrupt",
     "-err_detect", "ignore_err",
 
-    "-thread_queue_size", "2048",
+    "-thread_queue_size", "1024",
     "-i", "-",
 
     "-map", "0:v:0",
@@ -53,7 +52,7 @@ FFMPEG_CMD = [
     "-flvflags", "no_duration_filesize",
 
     "-f", "flv",
-    FACEBOOK_RTMP
+    RESTREAM_RTMP
 ]
 
 streamlink_process = None
@@ -92,9 +91,7 @@ signal.signal(signal.SIGTERM, signal_handler)
 
 
 print("========================================")
-print("TikTok Live Monitor -> Facebook Restreamer")
-print(f"Target TikTok: {TIKTOK_URL}")
-print("Destination: Facebook Live")
+print("TikTok Live Monitor & Auto-Restreamer")
 print("Status: RUNNING & LISTENING...")
 print("========================================\n")
 
@@ -117,7 +114,7 @@ while True:
             time.sleep(CHECK_INTERVAL_OFFLINE)
             continue
 
-        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ONLINE! Starting Restream to Facebook...")
+        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ONLINE! Starting Restream...")
         
         ffmpeg_process = subprocess.Popen(
             FFMPEG_CMD,

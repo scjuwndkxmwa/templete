@@ -4,7 +4,7 @@ import time
 import signal
 import sys
 
-TIKTOK_URL = "https://www.tiktok.com/@d.shakertawfiqalaroury/live"
+TIKTOK_URL = "https://www.tiktok.com/@.31342257/live"
 DESTINATION_RTMP = "rtmp://live-stream-eu.streamups.com/live/live_1451_TKbAxn8UXinCXhtJA3XZo64QWbQFAP6E"
 
 CHECK_INTERVAL_OFFLINE = 30  

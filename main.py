@@ -5,7 +5,7 @@ import signal
 import sys
 
 TIKTOK_URL = "https://www.tiktok.com/@d.shakertawfiqalaroury/live"
-RESTREAM_RTMP = "rtmp://live.restream.io/live/re_12443993_eventf3c5348e00eb4be0a45eb9055144926c"
+YOUTUBE_RTMP = "rtmp://a.rtmp.youtube.com/live2/xjqr-v1v9-kdpp-ggju-0jrf"
 
 CHECK_INTERVAL_OFFLINE = 30  
 
@@ -52,7 +52,7 @@ FFMPEG_CMD = [
     "-flvflags", "no_duration_filesize",
 
     "-f", "flv",
-    RESTREAM_RTMP
+    YOUTUBE_RTMP
 ]
 
 streamlink_process = None
@@ -91,7 +91,7 @@ signal.signal(signal.SIGTERM, signal_handler)
 
 
 print("========================================")
-print("TikTok Live Monitor & Auto-Restreamer")
+print("TikTok Live Monitor & YouTube Restreamer")
 print("Status: RUNNING & LISTENING...")
 print("========================================\n")
 
@@ -114,7 +114,7 @@ while True:
             time.sleep(CHECK_INTERVAL_OFFLINE)
             continue
 
-        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ONLINE! Starting Restream to Restream.io...")
+        print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Stream ONLINE! Starting Restream to YouTube...")
         
         ffmpeg_process = subprocess.Popen(
             FFMPEG_CMD,
